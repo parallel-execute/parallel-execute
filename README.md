@@ -3,6 +3,8 @@ Python wrappers for easy multiprocessing and threading
 
 Run multiple functions in parallel using threading or multiprocessing
 
+![GitHub](https://img.shields.io/github/license/parallel-execute/parallel-execute.svg)
+
 ## Installation
 ```
 pip install parallel-execute
@@ -85,6 +87,3 @@ output = loom.execute()
 >>> output
 {'key1': 'Hello World', 'fun2': 1, 'c': 'a=1, b=3'}
 ```
-
-[ Note: This does not support timeouts, so all runners must complete. To handle timeouts, each runner would have to keep track of its own timeout time, and throw an exception to signal an error to the Loom ]
-
