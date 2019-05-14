@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="parallel-execute",
-    version="0.0.1",
+    version="0.0.2",
     author="Sahil Pardeshi",
     author_email="sahilrp7@gmail.com",
     description="Python wrappers for easy multiprocessing and threading",
