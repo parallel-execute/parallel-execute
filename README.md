@@ -8,7 +8,7 @@ Run multiple functions in parallel using threading or multiprocessing
 pip install parallel-execute
 ```
 
-##Usage Example
+## Usage Example
 
 ##### 1. Create a loom object:
 This takes a number of tasks and executes them using a pool of threads/process.
