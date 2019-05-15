@@ -11,7 +11,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     license='MIT License',
     classifiers=[
-        "Development Status :: Production/Stable",
+        'Development Status :: 5 - Production/Stable',
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         'Programming Language :: Python :: 3.4',
