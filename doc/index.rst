@@ -46,7 +46,7 @@ threads/process.
 
 .. code-block:: python
 
-    from parallel.thread import ThreadLoom
+    from pexecute.thread import ThreadLoom
     loom = ThreadLoom(max_runner_cap=10)
 
 
@@ -54,7 +54,7 @@ threads/process.
 
 .. code-block:: python
 
-    from parallel.process import ProcessLoom
+    from pexecute.process import ProcessLoom
     loom = ProcessLoom(max_runner_cap=10)
 
 **max\_runner\_cap**: is the number of maximum threads/processes to run at a
