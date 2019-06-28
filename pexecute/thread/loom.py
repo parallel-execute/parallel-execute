@@ -14,5 +14,5 @@ class ThreadLoom(Loom):
         """
 
         r_id = len(self.runners)
-        r_wrapper = ThreadRunner(runner, r_id, key, self.output_dict)
+        r_wrapper = ThreadRunner(runner, r_id, key)
         self.runners.append(r_wrapper)

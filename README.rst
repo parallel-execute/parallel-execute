@@ -1,9 +1,9 @@
 parallel-execute
 ================
 
-Python wrappers for easy multiprocessing and threading
+Python wrappers for easy multiprocessing and threading.
 
-Run multiple functions in parallel using threading or multiprocessing
+Run multiple functions in parallel using parallel-execute
 
 .. image:: https://img.shields.io/github/license/parallel-execute/parallel-execute.svg
    :target: https://github.com/parallel-execute/parallel-execute/blob/master/LICENSE
@@ -99,7 +99,7 @@ key is the order in which the function was added and value is the return data of
     def fun2(a):
        return a
 
-    def fun3(a, b=0)
+    def fun3(a, b=0):
        return a+b
 
     loom.add_function(fun1, [], {})
@@ -108,7 +108,30 @@ key is the order in which the function was added and value is the return data of
 
     output = loom.execute()
     >>> output
-    {1: 'Hello World', 2: 1, 3: 4}
+        {
+         0: {'output': 'Hello World',
+             'got_error': False,
+             'error': None,
+             'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 395002),
+             'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 396500),
+             'execution_time': 0.001498,
+             },
+         1: {'output': 1,
+             'got_error': False,
+             'error': None,
+             'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 396590),
+             'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 397651),
+             'execution_time': 0.001061
+             },
+         2: {'output': 4,
+             'got_error': False,
+             'error': None,
+             'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 400323),
+             'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 401749),
+             'execution_time': 0.001426
+             }
+        }
+
 
 We can also provide a **key** to store the function return data.
 
@@ -117,9 +140,32 @@ We can also provide a **key** to store the function return data.
     # Example:
     loom.add_function(fun1, [], {}, 'key1')
     loom.add_function(fun2, [1], {}, 'fun2')
-    loom.add_function(fun3, [1], {'b': 3}, 'c')
+    loom.add_function(fun3, [1], {'b': 3}, 'xyz')
 
     output = loom.execute()
     >>> output
-    {'key1': 'Hello World', 'fun2': 1, 'c': 4}
+        {
+         'key1': {'output': 'Hello World',
+                 'got_error': False,
+                 'error': None,
+                 'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 395002),
+                 'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 396500),
+                 'execution_time': 0.001498,
+                 },
+         'fun2: {'output': 1,
+                 'got_error': False,
+                 'error': None,
+                 'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 396590),
+                 'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 397651),
+                 'execution_time': 0.001061
+                 },
+         'xyz': {'output': 4,
+                 'got_error': False,
+                 'error': None,
+                 'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 400323),
+                 'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 401749),
+                 'execution_time': 0.001426
+                 }
+        }
+
 
