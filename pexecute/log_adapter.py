@@ -21,4 +21,3 @@ class _ContextLogger(logging.LoggerAdapter):
 def adapt_log(logger, context):
     """Add context to an existing logger instance"""
     return _ContextLogger(logger, {'context': context})
-

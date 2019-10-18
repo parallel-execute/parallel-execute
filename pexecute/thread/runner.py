@@ -19,9 +19,3 @@ class ThreadRunner(RunnerWrapper):
         """ Returns True if runner is active else False """
 
         return self.runner and self.runner.isAlive()
-
-    @staticmethod
-    def initialize_tracker():
-        """ Initialises tracker dict """
-
-        return dict()
