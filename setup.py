@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="parallel-execute",
-    version="0.0.7",
+    version="0.0.8",
     author="Sahil Pardeshi",
     author_email="sahilrp7@gmail.com",
     description="Python wrappers for easy multiprocessing and threading",
@@ -13,11 +13,13 @@ setuptools.setup(
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         "Operating System :: OS Independent",
     ]
 )

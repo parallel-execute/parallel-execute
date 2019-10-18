@@ -10,7 +10,9 @@ LOGGER = logging.getLogger(__name__)
 class Loom(abc.ABC):
     """ Loom class """
 
-    def __init__(self, max_runner_cap, sleep_time=.1):
+    POOL_FILL_PAUSE = 0.1
+
+    def __init__(self, max_runner_cap):
         """ Base Loom Initializer
 
         Args:
@@ -21,16 +23,22 @@ class Loom(abc.ABC):
         """
 
         self.max_runner_cap = max_runner_cap
-        self.sleep_time = sleep_time
         self.runners = list()
+        self.started = list()
+        self.tracker_dict = None
+        self.initialize_tracker_dict()
 
     @abc.abstractmethod
-    def add_runner(self, runner, key):
-        """ this method is overridden in child classes """
+    def initialize_tracker_dict(self):
 
         pass
 
-    def add_function(self, func, args=None, kwargs=None, key=None):
+    @abc.abstractmethod
+    def add_runner(self, runner, key, log_exception):
+
+        pass
+
+    def add_function(self, func, args=None, kwargs=None, key=None, log_exception=True):
         """ Adds function in the Loom
 
         Args:
@@ -38,6 +46,7 @@ class Loom(abc.ABC):
             args (list): function args
             kwargs (dict): function kwargs
             key (str): ket to store the function output in dictionary
+            log_exception (bool): logs exception
         """
 
         if args is None:
@@ -48,7 +57,7 @@ class Loom(abc.ABC):
         if key is None:
             key = len(self.runners)
         fr = FuncRunner(func, *args, **kwargs)
-        self.add_runner(fr, key)
+        self.add_runner(fr, key, log_exception)
 
     def add_func(self, func, *args, **kwargs):
         """ Adds function in the Loom
@@ -81,33 +90,9 @@ class Loom(abc.ABC):
             self.add_function(work[0], args, kwargs, key=key)
 
     def execute(self):
-        """ Executes runners and returns output dict """
-
-        started = list()
-        for runner in self.runners:
-            runner.start()
-            started.append(runner)
-            while self.get_active_runner_count() >= self.max_runner_cap:
-                time.sleep(self.sleep_time)
-        for started_runner in started:
-            started_runner.join()
-
-        return self.get_output()
-
-    def get_active_runner_count(self):
-        """ Returns the total number of runners running at the present time """
-
-        count = 0
-        for runner in self.runners:
-            if runner.is_running():
-                count += 1
-        return count
-
-    def get_output(self):
-        """ Returns dictionary of tracker dictionaries containing runner output, error,
-        started time, finished time and execution time of the given runner.
-        runner key or the order in which function was added is the key to get the tracker
-        dictionary
+        """ Executes runners and returns output dictionary containing runner output, error,
+        started time, finished time and execution time of the given runner. runner key or the
+        order in which function was added is the key to get the tracker dictionary
 
         Returns:
             dict: output dict
@@ -132,7 +117,31 @@ class Loom(abc.ABC):
                 }
         """
 
-        output_dict = dict()
-        for runner in self.runners:
-            output_dict[runner.key] = dict(runner.tracker)
-        return output_dict
+        self.started = list()
+        while self.runners:
+            runner = self.runners.pop(0)
+            runner.start()
+            self.started.append(runner)
+            while self.get_active_runner_count() >= self.max_runner_cap:
+                time.sleep(self.POOL_FILL_PAUSE)
+
+        while self.started:
+            runner = self.started.pop(0)
+            if runner.is_running():
+                runner.join()
+
+        output = dict(self.tracker_dict)
+        self.initialize_tracker_dict()
+
+        return output
+
+    def get_active_runner_count(self):
+        """ Returns the total number of runners running at the present time """
+
+        count = 0
+        for runner in self.started:
+            if runner.is_running():
+                count += 1
+            elif runner.is_tracker_updated():
+                self.started.remove(runner)
+        return count
