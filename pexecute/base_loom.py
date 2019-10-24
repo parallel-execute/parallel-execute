@@ -125,10 +125,8 @@ class Loom(abc.ABC):
             while self.get_active_runner_count() >= self.max_runner_cap:
                 time.sleep(self.POOL_FILL_PAUSE)
 
-        while self.started:
-            runner = self.started.pop(0)
-            if runner.is_running():
-                runner.join()
+        while self.get_active_runner_count():
+            time.sleep(self.POOL_FILL_PAUSE)
 
         output = dict(self.tracker_dict)
         self.initialize_tracker_dict()
@@ -140,8 +138,10 @@ class Loom(abc.ABC):
 
         count = 0
         for runner in self.started:
-            if runner.is_running():
+            if runner.is_running() or not runner.is_tracker_updated():
                 count += 1
-            elif runner.is_tracker_updated():
-                self.started.remove(runner)
+
+        if count == 0:
+            self.started = list()
+
         return count
