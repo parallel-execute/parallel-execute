@@ -63,7 +63,7 @@ class RunnerWrapper(abc.ABC):
             output = self.func_runner.run()
         except Exception as e:
             got_error = True
-            error = e
+            error = str(e)
             if self.log_exception:
                 self.log.exception("Encountered an exception on {} {}".format(self, e))
         finally:
