@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="parallel-execute",
-    version="0.0.9",
+    version="0.1.0",
     author="Sahil Pardeshi",
     author_email="sahilrp7@gmail.com",
     description="Python wrappers for easy multiprocessing and threading",
