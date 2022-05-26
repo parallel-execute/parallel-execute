@@ -18,4 +18,4 @@ class ThreadRunner(RunnerWrapper):
     def is_running(self):
         """ Returns True if runner is active else False """
 
-        return self.runner and self.runner.isAlive()
+        return self.runner and self.runner.is_alive()
