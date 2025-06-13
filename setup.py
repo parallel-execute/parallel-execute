@@ -2,7 +2,8 @@ import setuptools
 
 setuptools.setup(
     name="parallel-execute",
-    version="0.1.1",
+    install_requires=["concurra>=1.0.7"],
+    version="2.0.1",
     author="Sahil Pardeshi",
     author_email="sahilrp7@gmail.com",
     description="Python wrappers for easy multiprocessing and threading",
@@ -10,6 +11,7 @@ setuptools.setup(
     url="https://github.com/parallel-execute/parallel-execute",
     packages=setuptools.find_packages(),
     license='MIT License',
+    python_requires=">=3.6",
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         "License :: OSI Approved :: MIT License",
@@ -25,6 +27,13 @@ setuptools.setup(
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: System :: Distributed Computing',
+        "Intended Audience :: Developers",
+        "Intended Audience :: Information Technology",
+        "Intended Audience :: System Administrators",
+        "Intended Audience :: Science/Research",
         "Operating System :: OS Independent",
     ]
 )
