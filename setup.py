@@ -3,7 +3,7 @@ import setuptools
 setuptools.setup(
     name="parallel-execute",
     install_requires=["concurra>=1.0.8"],
-    version="2.0.2",
+    version="2.0.3",
     author="Sahil Pardeshi",
     author_email="sahilrp7@gmail.com",
     description="Python wrappers for easy multiprocessing and threading",

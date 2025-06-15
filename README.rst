@@ -28,118 +28,173 @@ Run multiple functions in parallel using a simple API built on top of `threading
 .. image:: https://img.shields.io/pypi/pyversions/parallel-execute.svg
    :alt: Python versions
 
-
 Installation
-------------
+============
 
-Install the latest release from PyPI:
+Install the package using pip:
 
-::
+.. code-block:: bash
 
     pip install parallel-execute
 
-This will also install the lightweight `concurra` core engine as a dependency.
+Usage Example
+=============
 
----
+1. Create a Loom
+----------------
 
-Quick Start
------------
+A **Loom** takes multiple tasks (functions) and executes them in parallel using either threads or processes.
 
-Step 1: Create a Loom
-~~~~~~~~~~~~~~~~~~~~~
-
-Use a `Loom` class to create a task executor.
-
-- Thread-based execution:
-
-  .. code-block:: python
-
-      from pexecute.thread import ThreadLoom
-      loom = ThreadLoom(max_runner_cap=5)
-
-- Process-based execution:
-
-  .. code-block:: python
-
-      from pexecute.process import ProcessLoom
-      loom = ProcessLoom(max_runner_cap=5)
-
-**`max_runner_cap`** defines how many tasks run in parallel at once.
-
-
-Step 2: Add Tasks
-~~~~~~~~~~~~~~~~~
-
-You can add tasks using `.add_function()`:
+**Using Threads:**
 
 .. code-block:: python
 
-    def say_hello(): return "Hello"
-    def square(x): return x * x
+    from pexecute.thread import ThreadLoom
+    loom = ThreadLoom(max_runner_cap=10)
 
-    loom.add_function(say_hello)
-    loom.add_function(square, args=(4,))
-    loom.add_function(sum, args=([1, 2, 3],))
-
-Or add multiple at once using `.add_work()`:
+**Using Processes:**
 
 .. code-block:: python
 
-    work = [
-        (say_hello, [], {}, 'greeting'),
-        (square, (4,), {}, 'squared'),
-        (sum, ([1, 2, 3],), {}, 'total')
-    ]
+    from pexecute.process import ProcessLoom
+    loom = ProcessLoom(max_runner_cap=10)
+
+- **max_runner_cap**: The maximum number of threads/processes to run in parallel.
+  You can queue as many functions as needed; only ``max_runner_cap`` will run at the same time.
+
+2. Add Tasks to the Loom
+-------------------------
+
+**Add a Single Task:**
+
+Use ``add_function`` to add individual functions:
+
+.. code-block:: python
+
+    loom.add_function(f1, args1, kw1)
+    loom.add_function(f2, args2, kw2)
+    loom.add_function(f3, args3, kw3)
+
+**Add Multiple Tasks at Once:**
+
+Use ``add_work`` to add a batch of functions:
+
+.. code-block:: python
+
+    work = [(f1, args1, kwargs1), (f2, args2, kwargs2), (f3, args3, kwargs3)]
     loom.add_work(work)
 
+3. Execute Tasks
+----------------
 
-Step 3: Execute
-~~~~~~~~~~~~~~~
-
-Execute all tasks and retrieve results:
-
-.. code-block:: python
-
-    output = loom.execute()
-
-    >>> output
-    {
-        'greeting': 'Hello',
-        'squared': 16,
-        'total': 6
-    }
-
-If you didn’t provide keys, the results will be stored using the task order index:
+Once all tasks are added, call ``execute()`` to run them.
+It returns a dictionary mapping each task to its result.
 
 .. code-block:: python
 
     output = loom.execute()
+
+By default, the keys are integers in the order the functions were added. Each value is a dictionary containing the result and execution metadata.
+
+**Example:**
+
+.. code-block:: python
+
+    def fun1():
+        return "Hello World"
+
+    def fun2(a):
+        return a
+
+    def fun3(a, b=0):
+        return a + b
+
+    loom.add_function(fun1, [], {})
+    loom.add_function(fun2, [1], {})
+    loom.add_function(fun3, [1], {'b': 3})
+
+    output = loom.execute()
+
+.. code-block:: python
+
     >>> output
     {
-        0: 'Hello',
-        1: 16,
-        2: 6
+      0: {
+          'output': 'Hello World',
+          'got_error': False,
+          'error': None,
+          'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 395002),
+          'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 396500),
+          'execution_time': 0.001498,
+         },
+      1: {
+          'output': 1,
+          'got_error': False,
+          'error': None,
+          'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 396590),
+          'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 397651),
+          'execution_time': 0.001061
+         },
+      2: {
+          'output': 4,
+          'got_error': False,
+          'error': None,
+          'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 400323),
+          'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 401749),
+          'execution_time': 0.001426
+         }
     }
 
----
+4. Using Custom Keys
+---------------------
 
-Advanced Notes
---------------
+You can assign a custom **key** to each task. This allows you to identify results more explicitly in the output dictionary.
 
-- Any Python function can be passed as a task.
-- Tasks run in parallel with thread or process workers.
-- Results include execution time, errors, and output.
-- Task execution blocks until all tasks are complete.
-- If a task fails, it will still be recorded in the output dictionary with the error trace.
+.. code-block:: python
 
----
+    loom.add_function(fun1, [], {}, 'key1')
+    loom.add_function(fun2, [1], {}, 'fun2')
+    loom.add_function(fun3, [1], {'b': 3}, 'xyz')
+
+    output = loom.execute()
+
+.. code-block:: python
+
+    >>> output
+    {
+      'key1': {
+          'output': 'Hello World',
+          'got_error': False,
+          'error': None,
+          'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 395002),
+          'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 396500),
+          'execution_time': 0.001498,
+         },
+      'fun2': {
+          'output': 1,
+          'got_error': False,
+          'error': None,
+          'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 396590),
+          'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 397651),
+          'execution_time': 0.001061
+         },
+      'xyz': {
+          'output': 4,
+          'got_error': False,
+          'error': None,
+          'started_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 400323),
+          'finished_time': datetime.datetime(2019, 6, 28, 19, 44, 58, 401749),
+          'execution_time': 0.001426
+         }
+    }
+
 
 Migration Notice
 ================
 
-parallel-execute is now powered by a newer, more powerful backend called `concurra <https://pypi.org/project/concurra/>`_.
+``parallel-execute`` is now powered by a newer, more powerful backend called `concurra <https://pypi.org/project/concurra/>`_.
 
-New users are encouraged to use:
+New users are encouraged to switch to the new interface:
 
 .. code-block:: python
 
@@ -149,30 +204,5 @@ New users are encouraged to use:
     runner.add_task(my_func, *args, **kwargs)
     results = runner.run()
 
-Backward compatibility with `ThreadLoom` and `ProcessLoom` is maintained, but may be deprecated in future versions.
-
----
-
-License
--------
-
-MIT License. See `LICENSE <https://github.com/parallel-execute/parallel-execute/blob/master/LICENSE>`_.
-
-
-Changelog
-=========
-
-2.0.1 (2025-06-13)
-------------------
-
-**Added**
-- Introduced Concurra ``TaskRunner`` for unified parallel execution.
-- `concurra <https://pypi.org/project/concurra/>`_.
-
-
-**Changed**
-- Deprecated ``ThreadLoom`` and ``ProcessLoom``, now backed by Concurra ``TaskRunner``.
-
-**Fixed**
-- Proper timeout handling and progress reporting.
-
+Backward compatibility with ``ThreadLoom`` and ``ProcessLoom`` is currently maintained,
+but may be **deprecated in future versions**.
