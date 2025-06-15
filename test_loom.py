@@ -27,7 +27,7 @@ def test_successful_task_execution():
     runner = ThreadLoom(max_runner_cap=2, logger=LOGGER)
     runner.add_task(dummy_success, 3, label="task1")
     runner.add_task(dummy_success, 5, label="task2")
-    results = runner.run()
+    results = runner.execute()
 
     assert results["task1"]["result"] == 6
     assert results["task1"]["has_failed"] is False
@@ -80,7 +80,7 @@ def test_multiprocessing_success():
 
     runner.add_task(dummy_success, 2, label="mp_task1")
     runner.add_task(dummy_success, 3, label="mp_task2")
-    results = runner.run()
+    results = runner.execute()
 
     assert results["mp_task1"]["result"] == 4
     assert results["mp_task2"]["result"] == 6
@@ -118,7 +118,7 @@ def test_task_timeout():
 
 def test_no_tasks():
     runner = ThreadLoom(logger=LOGGER)
-    results = runner.run()
+    results = runner.execute()
     assert results == {}
 
 def test_duplicate_labels():
@@ -137,12 +137,12 @@ def test_run_after_background():
     runner.add_task(dummy_success, 1, label="bg")
     runner.execute_in_background()
     with pytest.raises(RuntimeError):
-        runner.run()
+        runner.execute()
 
 def test_task_without_label():
     runner = ThreadLoom(logger=LOGGER)
     runner.add_task(dummy_success, 2)
-    results = runner.run()
+    results = runner.execute()
 
     assert results[0]["result"] == 4
 
@@ -193,7 +193,7 @@ def test_add_work_method():
     ]
 
     runner.add_work(workload)
-    results = runner.run()
+    results = runner.execute()
 
     assert results["task1"]["result"] == 2
     assert results["task2"]["result"] == 4
